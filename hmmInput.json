@@ -1,11 +1,5 @@
 {
-	"numberOfStates": "4",
-	"numberOfEmissions": "4",
-	"initialProbabilities": [
-		[0.3],
-		[0.4], 
-		[0.3],
-		[0.0]
-	],
+	"numberOfStates": 4,
+	"numberOfEmissions": 4,
 	"transitionSequence": [1, 2, 3, 4]
 }

@@ -1,8 +1,8 @@
 var data = require('./hmmInput.json')
 var math = require('mathjs')
 
-var numberOfStates = parseInt(data.numberOfStates)
-var numberOfEmissions = parseInt(data.numberOfEmissions)
+var numberOfStates = data.numberOfStates
+var numberOfEmissions = data.numberOfEmissions
 var givenSequence = data.transitionSequence
 
 var transitionMatrix = []
@@ -12,60 +12,36 @@ var transitionSequence = []
 transitionMatrix = math.matrix(generateWeights(numberOfStates, transitionMatrix))
 emissionMatrix = math.matrix(generateWeights(numberOfEmissions, emissionMatrix))
 initialProbability = math.matrix(generateWeights(numberOfStates, initialProbabilities, true))
-//var stepProbability = initialProbabilities
 
 console.log("\nStates: ", numberOfStates)
 console.log("\nEmissions: ", numberOfEmissions)
 console.log("\nTransition Matrix:\n", transitionMatrix.valueOf())
 console.log("\nEmission Matrix:\n", emissionMatrix.valueOf())
 console.log("\nInitial Probabilities:\n", initialProbabilities.valueOf())
-console.log("\nGiven Sequence:", givenSequence)
+console.log("\nGiven Observation:", givenSequence, '\n')
 
 function sequence() {
-	//var allStatesInSequence = false
-	
-	// for (var i = 0; i < givenSequence.length; i++) {
-	// 	var states = []
-	for (var j = 0; j < numberOfStates; j++) {
-		var temp = probability(j, initialProbability, transitionMatrix).valueOf()
+	var prevIndex = 0
+	for (var i = 0; i < givenSequence.length; i++) {
+		var stepProbability = []
+		for (var j = 0; j < numberOfStates; j++) {
+			if (i == 0) {
+				stepProbability.push(initialProbability.valueOf()[j] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
+			}
+			else {
+				stepProbability.push(transitionMatrix.valueOf()[j][prevIndex] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
+			}
+		}
+		// Finding max probability and index of it
+		maxStepProbability = Math.max.apply(null, stepProbability)
+		maxStepProbabilityIndex = stepProbability.indexOf(maxStepProbability)
+		prevIndex = maxStepProbabilityIndex
 
-		//console.log("Sorted:", temp)
+		// Adding that index to the transition sequence
+		transitionSequence.push(maxStepProbabilityIndex+1)
+		console.log("Step", i+1, "probability:\n",stepProbability)
 	}
-		
-
-		// stepProbability = probability(i, stepProbability, transitionMatrix)
-
-		// var greatest = 0
-		// var greatestPlace = -1
-		// stepProbability.valueOf().forEach((value) => {
-		// 	if (value > greatest) {
-		// 		greatest = value
-		// 		greatestPlace = stepProbability.valueOf().indexOf(value)
-		// 	}
-		// })
-		// transitionSequence.push(greatestPlace + 1)
-
-		// if (i == 15)
-		// 	break
-
-		// for (var j = 0; j < numberOfStates; j++) {
-		// 	if (transitionSequence.includes(j + 1))
-		// 		allStatesInSequence = true
-		// 	else {
-		// 		allStatesInSequence = false
-		// 		break
-		// 	}
-		// }
-	// }
-
 	console.log("\nTransition Sequence:", transitionSequence)
-}
-
-function probability(step, input, matrix) {
-	tempProbability = math.multiply(matrix.valueOf(), input)
-	console.log("\nStep", step+1, "probability: ")
-	console.log(tempProbability.valueOf())
-	return tempProbability
 }
 
 // Random weight generation
