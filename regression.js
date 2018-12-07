@@ -41,7 +41,7 @@ var m = My - b * Mx
 // Output equation of line
 console.log("\ny =", m + "X +", b)
 
-var r = SP / math.sqrt(SSx * SSy)
+var r = SP / math.round(math.sqrt(SSx * SSy), 2)
 
 // Output regression value
 console.log("r =", r)
