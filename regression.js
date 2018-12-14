@@ -35,11 +35,17 @@ points.forEach((point) => {
 	SSy += math.square(y)
 })
 
+// Added covariance equation
+var covariance = SP / (num - 1)
+
 var b = SP / SSx
 var m = My - b * Mx
 
 // Output equation of line
 console.log("\ny =", m + "X +", b)
+
+// Output covariance
+console.log("Covariance =", covariance)
 
 var r = SP / math.round(math.sqrt(SSx * SSy), 2)
 

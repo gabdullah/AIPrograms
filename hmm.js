@@ -20,28 +20,83 @@ console.log("\nEmission Matrix:\n", emissionMatrix.valueOf())
 console.log("\nInitial Probabilities:\n", initialProbabilities.valueOf())
 console.log("\nGiven Observation:", givenSequence, '\n')
 
+
+
 function sequence() {
-	var prevIndex = 0
+	// OLD
+	// var prevIndex = 0
+	// for (var i = 0; i < givenSequence.length; i++) {
+	// 	var stepProbability = []
+	// 	for (var j = 0; j < numberOfStates; j++) {
+	// 		if (i == 0) {
+	// 			stepProbability.push(initialProbability.valueOf()[j] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
+	// 		}
+	// 		else {
+	// 			stepProbability.push(transitionMatrix.valueOf()[j][prevIndex] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
+	// 		}
+	// 	}
+	// 	// Finding max probability and index of it
+	// 	maxStepProbability = Math.max.apply(null, stepProbability)
+	// 	maxStepProbabilityIndex = stepProbability.indexOf(maxStepProbability)
+	// 	prevIndex = maxStepProbabilityIndex
+
+	// 	// Adding that index to the transition sequence
+	// 	transitionSequence.push(maxStepProbabilityIndex+1)
+	// 	console.log("Step", i+1, "probability:\n",stepProbability)
+	// }
+	// console.log("\nTransition Sequence:", transitionSequence)
+
+	var probability = []
+	var set = []
+	for (var i = 0; i < numberOfStates; i++) {
+		set.push(i)
+	}
+
+	multiArray = []
 	for (var i = 0; i < givenSequence.length; i++) {
-		var stepProbability = []
-		for (var j = 0; j < numberOfStates; j++) {
-			if (i == 0) {
-				stepProbability.push(initialProbability.valueOf()[j] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
-			}
-			else {
-				stepProbability.push(transitionMatrix.valueOf()[j][prevIndex] * emissionMatrix.valueOf()[j][givenSequence[i]-1])
+		multiArray.push(set)
+	}
+
+	var cartesian = [[]]
+	for (var i = 0; i < multiArray.length; i++) {
+		var subArray = multiArray[i]
+		var temp = []
+		for (var j = 0; j < cartesian.length; j++) {
+			for (var k = 0; k < subArray.length; k++) {
+				temp.push(cartesian[j].concat(subArray[k]))
 			}
 		}
-		// Finding max probability and index of it
-		maxStepProbability = Math.max.apply(null, stepProbability)
-		maxStepProbabilityIndex = stepProbability.indexOf(maxStepProbability)
-		prevIndex = maxStepProbabilityIndex
-
-		// Adding that index to the transition sequence
-		transitionSequence.push(maxStepProbabilityIndex+1)
-		console.log("Step", i+1, "probability:\n",stepProbability)
+		cartesian = temp
 	}
-	console.log("\nTransition Sequence:", transitionSequence)
+
+	var maxProbability = -1
+	var bestPath = []
+	cartesian.forEach((sequence) => {
+		var result = 1
+		for (var i = 0; i < sequence.length; i++) {
+			if (i == 0) {
+				result *= initialProbability.valueOf()[sequence[i]] * emissionMatrix.valueOf()[givenSequence[i]-1][sequence[i]]
+			}
+			else {
+				result *= transitionMatrix.valueOf()[sequence[i]][sequence[i-1]] * emissionMatrix.valueOf()[givenSequence[i]-1][sequence[i]]
+			}
+		}
+		probability.push(result)
+		if (result > maxProbability) {
+			maxProbability = result
+			bestPath = sequence
+		}
+	})
+	// All probabilities
+	//console.log(probability)
+
+	for (var i = 0; i < givenSequence.length; i++) {
+		bestPath[i] = bestPath[i] + 1
+	}
+
+	// Final Output
+	console.log("Best path for given observation is:", bestPath)
+	console.log("With a probability of:", maxProbability)
 }
 
 // Random weight generation
